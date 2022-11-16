@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
+//Random comment
 package com.google.inject.assistedinject;
 
 import static com.google.common.base.Preconditions.checkState;
