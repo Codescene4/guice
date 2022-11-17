@@ -13,6 +13,90 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+ private static boolean isSourceEntry(Binding<?> b, RealOptionalBinder.Source type) {
+    switch (type) {
+      case ACTUAL:
+        return b.getKey().getAnnotation() instanceof RealOptionalBinder.Actual;
+      case DEFAULT:
+        return b.getKey().getAnnotation() instanceof RealOptionalBinder.Default;
+      default:
+        throw new IllegalStateException("invalid type: " + type);
+    }
+  }
+
+  /** Returns the subset of elements that have keys, indexed by them. */
+  private static Map<Key<?>, Binding<?>> index(Iterable<Element> elements) {
+    ImmutableMap.Builder<Key<?>, Binding<?>> builder = ImmutableMap.builder();
+    for (Element element : elements) {
+      if (element instanceof Binding) {
+        builder.put(((Binding) element).getKey(), (Binding) element);
+      }
+    }
+    return builder.buildOrThrow();
+  }
+
+  static <K, V> MapResult<K, V> instance(K k, V v) {
+    return new MapResult<K, V>(k, new BindResult<V>(INSTANCE, v, null));
+  }
+
+  static <K, V> MapResult<K, V> linked(K k, Class<? extends V> clazz) {
+    return new MapResult<K, V>(k, new BindResult<V>(LINKED, null, Key.get(clazz)));
+  }
+
+  static <K, V> MapResult<K, V> linked(K k, Key<? extends V> key) {
+    return new MapResult<K, V>(k, new BindResult<V>(LINKED, null, key));
+  }
+
+  static <K, V> MapResult<K, V> providerInstance(K k, V v) {
+    return new MapResult<K, V>(k, new BindResult<V>(PROVIDER_INSTANCE, v, null));
+  }
+
+  static class MapResult<K, V> {
+    private final K k;
+    private final BindResult<V> v;
+
+    MapResult(K k, BindResult<V> v) {
+      this.k = k;
+      this.v = v;
+    }
+
+    @Override
+    public String toString() {
+      return "entry[key[" + k + "],value[" + v + "]]";
+    }
+  }
+
+  private static boolean matches(Binding<?> item, BindResult<?> result) {
+    switch (result.type) {
+      case INSTANCE:
+        if (item instanceof InstanceBinding
+            && ((InstanceBinding) item).getInstance().equals(result.instance)) {
+          return true;
+        }
+        break;
+      case LINKED:
+        if (item instanceof LinkedKeyBinding
+            && ((LinkedKeyBinding) item).getLinkedKey().equals(result.key)) {
+          return true;
+        }
+        break;
+      case PROVIDER_INSTANCE:
+        if (item instanceof ProviderInstanceBinding
+            && Objects.equal(
+                ((ProviderInstanceBinding) item).getUserSuppliedProvider().get(),
+                result.instance)) {
+          return true;
+        }
+        break;
+      case PROVIDER_KEY:
+        if (item instanceof ProviderKeyBinding
+            && ((ProviderKeyBinding) item).getProviderKey().equals(result.key)) {
+          return true;
+        }
+        break;
+    }
+    return false;
+  }
 
 package com.google.inject.assistedinject;
 
