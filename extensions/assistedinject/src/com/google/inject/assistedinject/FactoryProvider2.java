@@ -13,7 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
+  private static boolean isSourceEntry(Binding<?> b, RealOptionalBinder.Source type) {
+    switch (type) {
+      case ACTUAL:
+        return b.getKey().getAnnotation() instanceof RealOptionalBinder.Actual;
+      case DEFAULT:
+        return b.getKey().getAnnotation() instanceof RealOptionalBinder.Default;
+      default:
+        throw new IllegalStateException("invalid type: " + type);
+    }
+  }
 package com.google.inject.assistedinject;
 
 import static com.google.common.base.Preconditions.checkState;
