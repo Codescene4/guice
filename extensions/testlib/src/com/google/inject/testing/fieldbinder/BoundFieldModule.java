@@ -13,7 +13,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
+  @SuppressWarnings("unchecked")
+  private static <T> void mapModuleTest(
+      Key<T> mapKey,
+      TypeLiteral<?> keyType,
+      TypeLiteral<?> valueType,
+      Iterable<? extends Module> modules,
+      boolean allowDuplicates,
+      int expectedMapBindings,
+      MapResult<?, ?>... results) {
+    Set<Element> elements = ImmutableSet.copyOf(Elements.getElements(modules));
+    Visitor<T> visitor = new Visitor<>();
+    MapBinderBinding<T> mapbinder = null;
+    Map<Key<?>, Binding<?>> keyMap = Maps.newHashMap();
+    for (Element element : elements) {
+      if (element instanceof Binding) {
+        Binding<?> binding = (Binding<?>) element;
+        keyMap.put(binding.getKey(), binding);
+        if (binding.getKey().equals(mapKey)) {
+          mapbinder = (MapBinderBinding<T>) ((Binding<T>) binding).acceptTargetVisitor(visitor);
+        }
+      }
+    }
+    assertNotNull(mapbinder);
 package com.google.inject.testing.fieldbinder;
 
 import static java.util.Arrays.stream;
