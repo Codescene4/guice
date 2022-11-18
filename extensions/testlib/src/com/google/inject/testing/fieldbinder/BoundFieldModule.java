@@ -45,6 +45,29 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+static <T> void assertOptionalVisitor(
+      Key<T> keyType,
+      Iterable<? extends Module> modules,
+      VisitType visitType,
+      int expectedOtherOptionalBindings,
+      BindResult<?> expectedDefault,
+      BindResult<?> expectedActual,
+      BindResult<?> expectedUserLinkedActual) {
+    if (visitType == null) {
+      fail("must test something");
+    }
+
+    // expect twice as many bindings because of java.util.Optional
+    expectedOtherOptionalBindings *= 2;
+    if (visitType == BOTH || visitType == INJECTOR) {
+      optionalInjectorTest(
+          keyType,
+          modules,
+          expectedOtherOptionalBindings,
+          expectedDefault,
+          expectedActual,
+          expectedUserLinkedActual);
+    }
 
 /**
  * A Guice module that automatically adds Guice bindings into the injector for all {@link Bind}
