@@ -86,6 +86,15 @@ import java.util.Set;
  *
  * @author sameb@google.com (Sam Berlin)
  */
+  private static Map<Key<?>, Binding<?>> index(Iterable<Element> elements) {
+    ImmutableMap.Builder<Key<?>, Binding<?>> builder = ImmutableMap.builder();
+    for (Element element : elements) {
+      if (element instanceof Binding) {
+        builder.put(((Binding) element).getKey(), (Binding) element);
+      }
+    }
+    return builder.buildOrThrow();
+  }
 public class SpiUtils {
 
   /** The kind of test we should perform. A live Injector, a raw Elements (Module) test, or both. */
