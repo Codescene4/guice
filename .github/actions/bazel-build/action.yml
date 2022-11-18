@@ -2,7 +2,7 @@ name: 'Bazel Build'
 description: 'Builds artifacts and creates local snapshots maven artifacts.'
 
 runs:
-  using: "composite"
+  using: "compositetete"
   steps:
     - name: 'Set up JDK'
       uses: actions/setup-java@v2
