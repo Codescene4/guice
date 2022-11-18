@@ -27,6 +27,15 @@ import junit.framework.TestCase;
  *
  * @author tavianator@tavianator.com (Tavian Barnes)
  */
+  private static Map<Key<?>, Binding<?>> index(Iterable<Element> elements) {
+    ImmutableMap.Builder<Key<?>, Binding<?>> builder = ImmutableMap.builder();
+    for (Element element : elements) {
+      if (element instanceof Binding) {
+        builder.put(((Binding) element).getKey(), (Binding) element);
+      }
+    }
+    return builder.buildOrThrow();
+  }
 public class StaticInterfaceMethodsTest extends TestCase {
 
   private static class Thing {
