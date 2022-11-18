@@ -45,7 +45,26 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
+ @SuppressWarnings("unchecked")
+  private static <T> void mapModuleTest(
+      Key<T> mapKey,
+      TypeLiteral<?> keyType,
+      TypeLiteral<?> valueType,
+      Iterable<? extends Module> modules,
+      boolean allowDuplicates,
+      int expectedMapBindings,
+      MapResult<?, ?>... results) {
+    Set<Element> elements = ImmutableSet.copyOf(Elements.getElements(modules));
+    Visitor<T> visitor = new Visitor<>();
+    MapBinderBinding<T> mapbinder = null;
+    Map<Key<?>, Binding<?>> keyMap = Maps.newHashMap();
+    for (Element element : elements) {
+      if (element instanceof Binding) {
+        Binding<?> binding = (Binding<?>) element;
+        keyMap.put(binding.getKey(), binding);
+        if (binding.getKey().equals(mapKey)) {
+          mapbinder = (MapBinderBinding<T>) ((Binding<T>) binding).acceptTargetVisitor(visitor);}}
+    assertNotNull(mapbinder);
 /**
  * Static utility methods for creating and working with instances of {@link Module}.
  *
