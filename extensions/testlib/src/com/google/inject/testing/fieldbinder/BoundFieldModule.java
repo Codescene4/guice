@@ -106,6 +106,22 @@ import java.lang.reflect.Type;
  * @see Bind
  * @author eatnumber1@google.com (Russ Harmon)
  */
+
+    @Override
+    public String toString() {
+      switch (type) {
+        case INSTANCE:
+          return "instance[" + instance + "]";
+        case LINKED:
+          return "linkedKey[" + key + "]";
+        case PROVIDER_INSTANCE:
+          return "providerInstance[" + instance + "]";
+        case PROVIDER_KEY:
+          return "providerKey[" + key + "]";
+      }
+      return null;
+    }
+  }
 public final class BoundFieldModule implements Module {
   private final Object instance;
   private final ImmutableList<Message> deferredBindingErrors;
